@@ -1,0 +1,16 @@
+{
+  "process_uid": 30033,
+  "process_gid": 30033,
+  "process_groups": [
+    30033
+  ],
+  "state_path": "/home/claude/paper1a-h2-ablation/.local-env/data/state.json",
+  "state_owner_uid": 0,
+  "state_owner_gid": 30033,
+  "state_mode": "0o644",
+  "data_dir_owner_uid": 0,
+  "data_dir_owner_gid": 30033,
+  "data_dir_mode": "0o2755",
+  "state_writable_by_process": false,
+  "data_dir_writable_by_process": false
+}

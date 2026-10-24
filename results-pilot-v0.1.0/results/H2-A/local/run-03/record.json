@@ -1,0 +1,128 @@
+{
+  "test": "H2-A",
+  "mode": "local",
+  "sham_control": false,
+  "expected_outcome": "PASS",
+  "reported_batch_eligible": false,
+  "harness_version": "0.1.0",
+  "parent_harness": "H4 Ablation Harness, https://doi.org/10.5281/zenodo.22711457",
+  "source_sha256": {
+    "run_h2.py": "ae055fa247c3dd87640eac1449fb35a186fec9a618f21ebaa2ab376b21bdc9d1",
+    "experiments/H2/docker-compose.yml": "a9cb52fea8e3bd74e2148fa3d85285040ee2c022e8c868568e766f4f2fcf2a31",
+    "experiments/H2/receiver/Dockerfile": "86c6ff47f31a094e279bacf2220e155ad1b0745aa7eae0ea5ace828b89614e6a",
+    "experiments/H2/receiver/entrypoint.sh": "0a2c27912f7d2fba47bb4fa49c26423566aa8554dc9862f77db386dceb301ca9",
+    "experiments/H2/receiver/receiver.py": "745daaaeab0beee6f0c70ba7a33b5252ff541a5092ee28418f4bf0b5d9c5ca17",
+    "experiments/H2/receiver/internal_probe.py": "fedfd86d8b61fdb0ec866f0cc25561121dbbe358fbf9b39860debfb6e5721fe0",
+    "experiments/H2/receiver/admin.py": "aa102b62d29a6b60636d8b06f62023452ee5525bcc81c1af01f57003f98e55ed",
+    "experiments/H2/source/Dockerfile": "05c576dc1f042271384c3e797c21c250079b804256599aa771293b996357bd9c",
+    "experiments/H2/source/send.py": "d0257149067d80ffc6962fbe6de8a8591977ed56919e0eebfde48cdd88c1db95",
+    "manifests/H2-I.yaml": "5525d68184af31cdba9833f8bc36936b6ce94a986f0d30121b0b2e85319642f2",
+    "manifests/H2-X.yaml": "6e62fcc462702b403cc245bed88fc5daa3be9e5e162e849cdbe93fbe4904ac2e",
+    "manifests/H2-A.yaml": "e79f83d566aff229fcc27a8dfc7d019a5c4fd73fbdef423598642f7c1a2be88a"
+  },
+  "run": 3,
+  "timestamp_utc": "2026-10-24T12:31:05.652157+00:00",
+  "source_ip": "127.0.0.1",
+  "baseline_prediction": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "baseline_observed": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "baseline_evidence_complete": true,
+  "post_prediction": [
+    1,
+    1,
+    0,
+    0
+  ],
+  "post_observed": [
+    1,
+    1,
+    0,
+    0
+  ],
+  "post_evidence_complete": true,
+  "outcome": "PASS",
+  "baseline_evidence_summary": {
+    "source_result": {
+      "status": 200,
+      "body": {
+        "admitted": true,
+        "routed": true,
+        "written": 42,
+        "denied": false,
+        "client_ip": "127.0.0.1"
+      }
+    },
+    "x_probe": {
+      "status": 200,
+      "marker_seen": true,
+      "routed": true
+    },
+    "authority_probe": {
+      "authority_probe": "ok"
+    }
+  },
+  "post_evidence_summary": {
+    "ablation_applied": {
+      "command": "WITHDRAW_WRITE",
+      "admin_uid": 0,
+      "data_dir_mode": "0o2755",
+      "state_mode": "0o644",
+      "policy_mode": "0o644",
+      "data_dir_owner_uid": 0,
+      "state_owner_uid": 0
+    },
+    "source_result": {
+      "status": 200,
+      "body": {
+        "admitted": true,
+        "routed": true,
+        "written": null,
+        "denied": true,
+        "client_ip": "127.0.0.1"
+      }
+    },
+    "x_probe": {
+      "status": 200,
+      "marker_seen": true,
+      "routed": true
+    },
+    "authority_probe": {
+      "authority_probe": "denied",
+      "error": "PermissionError(13, 'Permission denied')"
+    },
+    "access_state": {
+      "process_uid": 30033,
+      "process_gid": 30033,
+      "process_groups": [
+        30033
+      ],
+      "state_path": "/home/claude/paper1a-h2-ablation/.local-env/data/state.json",
+      "state_owner_uid": 0,
+      "state_owner_gid": 30033,
+      "state_mode": "0o644",
+      "data_dir_owner_uid": 0,
+      "data_dir_owner_gid": 30033,
+      "data_dir_mode": "0o2755",
+      "state_writable_by_process": false,
+      "data_dir_writable_by_process": false
+    },
+    "restore": {
+      "command": "RESTORE_WRITE",
+      "admin_uid": 0,
+      "data_dir_mode": "0o2775",
+      "state_mode": "0o664",
+      "policy_mode": "0o664",
+      "data_dir_owner_uid": 0,
+      "state_owner_uid": 0
+    }
+  }
+}

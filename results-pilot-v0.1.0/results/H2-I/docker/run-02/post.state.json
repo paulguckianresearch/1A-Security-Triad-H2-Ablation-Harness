@@ -1,0 +1,14 @@
+{
+  "state": {
+    "test_value": 0,
+    "authority_probe": "ok"
+  },
+  "policy": {
+    "deny_ip": "172.19.0.3",
+    "route_admission_to_worker": true
+  },
+  "mem": {
+    "marker_seen": true,
+    "marker_count": 1
+  }
+}
