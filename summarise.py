@@ -13,17 +13,18 @@ for rec in sorted(RES.rglob("record.json")):
 
 lines = ["# Results", "",
          "Reported batch: docker mode, non-sham runs. Local and sham runs are listed for completeness.", ""]
-for test in ("H2-I", "H2-X", "H2-A"):
+for test in ("H2-I", "H2-X", "H2-A", "H2-P", "H2-N"):
     lines += [f"## {test}", "",
-              "| Mode | Run | Baseline | Post | Predicted post | Outcome | Reported |",
-              "|------|-----|----------|------|----------------|---------|----------|"]
+              "| Mode | Run | Baseline | Post | Predicted post | Outcome | Restored | Reported |",
+              "|------|-----|----------|------|----------------|---------|----------|----------|"]
     for r in rows:
         if r["test"] != test:
             continue
         mode = r["mode"] + ("-sham" if r.get("sham_control") else "")
         lines.append(f"| {mode} | {r['run']:02d} | {tuple(r['baseline_observed'])} | "
                      f"{tuple(r['post_observed'])} | {tuple(r['post_prediction'])} | "
-                     f"{r['outcome']} | {'yes' if r.get('reported_batch_eligible') else 'no'} |")
+                     f"{r['outcome']} | {r.get('restoration_outcome','n/a')} | "
+                     f"{'yes' if r.get('reported_batch_eligible') else 'no'} |")
     lines.append("")
     counts = {}
     for r in rows:

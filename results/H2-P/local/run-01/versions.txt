@@ -1,0 +1,2 @@
+Host platform: Linux-6.18.44-fc-v153-x86_64-with-glibc2.39
+Runner interpreter: /usr/local/bin/python3 3.13.17

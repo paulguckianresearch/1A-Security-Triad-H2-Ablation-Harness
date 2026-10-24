@@ -10,11 +10,19 @@ The experiment tests H2 (Section 4.3): that each of the three structural
 conditions can be removed from one fixed mechanism, by an ordinary control,
 while the other two are independently verified unchanged.
 
-| Test | Condition removed | Control (Paper 1A Table 3) | Predicted post-ablation (I, X, A, O) |
-|------|-------------------|----------------------------|--------------------------------------|
-| H2-I | Interface | admission denied for the source (segmentation) | (0, 1, 1, 0) |
-| H2-X | Execution Pathway | route from admission to worker disabled (patching, disabling functionality) | (1, 0, 1, 0) |
-| H2-A | Authority | write control over the protected state withdrawn (least authority) | (1, 1, 0, 0) |
+| Test | Kind | Intervention (Paper 1A intervention table) | Predicted post (I, X, A, O) |
+|------|------|--------------------------------------------|-----------------------------|
+| H2-I | structural denial | admission denied for the source (segmentation) | (0, 1, 1, 0) |
+| H2-X | structural denial | route from admission to worker disabled (patching, disabling functionality) | (1, 0, 1, 0) |
+| H2-A | structural denial | write control over the protected state withdrawn (least authority) | (1, 1, 0, 0) |
+| H2-P | processing interdiction | content rule in the worker refuses the write; nothing structural changes | (1, 1, 1, 0) |
+| H2-N | null intervention | log verbosity changed; nothing relevant changes | (1, 1, 1, 1) |
+
+H2-P puts Eq. (6) of the paper at risk: a model whose third condition were
+the ability to execute would have to record a condition absent here. H2-N
+bounds the classifier from the other side (no false structural change).
+Every run ends with a restoration phase predicted (1, 1, 1, 1) with the
+operation returning, which shows the intervention was the cause.
 
 Baseline prediction for every test is (1, 1, 1, 1).
 
@@ -35,11 +43,15 @@ assignment: this is the node-level experiment, not the relational one.
 
 ## Release status
 
-- **v0.1.0 (this release): pre-registration.** Manifests, predictions and
-  harness frozen (`FROZEN_SHA256SUMS.txt`); `results/` holds only local
-  calibration runs on Linux (H2-I, H2-X, H2-A each 5/5 PASS; sham 2/2 FAIL
-  per test), which are not the reported batch.
-- **v1.0.0 (to follow): results.** The Docker batch run after v0.1.0 was
+- **v0.1.0 (not deposited): pilot.** Three denials and the sham. A Docker
+  pilot batch was run on Windows before any deposit (I, X, A each 5/5 PASS;
+  sham 2/2 FAIL per test). It is kept under `results-pilot-v0.1.0/` as a
+  pre-specified pilot and is not the reported batch.
+- **v0.2.0 (this release): pre-registration.** Adds H2-P, H2-N and the
+  restoration phase; manifests, predictions and harness frozen
+  (`FROZEN_SHA256SUMS.txt`). `results/` holds only local calibration runs
+  on Linux.
+- **v1.0.0 (to follow): results.** The Docker batch run after v0.2.0 was
   deposited, with every run's evidence bundle and `RESULTS.md`.
 
 See `docs/PUBLICATION_CHECKLIST.md` and `DEPOSIT.md`.
@@ -80,8 +92,8 @@ and are not the reported batch.
 
 ```
 python run_h2.py --dry-run                      # validate, print hashes
-python run_h2.py --execute --runs 5             # docker, all three tests, 5 runs each
-python run_h2.py --execute --runs 2 --sham      # harness control, expected FAIL
+python run_h2.py --execute --runs 5             # docker, all five tests, 5 runs each
+python run_h2.py --execute --runs 2 --sham      # harness control on the three denials, expected FAIL
 python summarise.py                             # write RESULTS.md
 ```
 
@@ -98,12 +110,15 @@ never used as evidence of absence.
 
 ## Result interpretation
 
-The runner reports PASS, FAIL or AMBIGUOUS per run. A PASS supports H2 for
-this mechanism: the dissociated state was produced and the unaffected
-conditions were verified present. It does not establish anything about
-other mechanisms, about completeness (H1) or about reproducibility between
+The runner reports PASS, FAIL or AMBIGUOUS per run, and a separate
+restoration outcome. A PASS on H2-I, H2-X or H2-A supports H2 for this
+mechanism: the dissociated state was produced and the unaffected conditions
+were verified present. A PASS on H2-P supports the separation of structure
+from outcome (Eq. 6). None of this establishes anything about other
+mechanisms, about completeness (H1) or about reproducibility between
 analysts (H3). The sham control shows that the classifier returns FAIL when
-no ablation is applied.
+absence is predicted and nothing is applied; H2-N shows it returns no false
+absence when something irrelevant is applied.
 
 ## Requirements
 

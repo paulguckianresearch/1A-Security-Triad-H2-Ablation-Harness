@@ -2,7 +2,7 @@ id: H2-A
 title: "Single-mechanism Authority ablation (write control over the protected state withdrawn)"
 paper: "Paper 1A, Section 4.3, state (1,1,0)"
 parent: "H4 Ablation Harness I-1 receiver, https://doi.org/10.5281/zenodo.22711457"
-harness_version: 0.1.0
+harness_version: 0.2.0
 
 operation:
   description: "Source S causes receiver R to change test_value from 0 to 42."
@@ -36,6 +36,7 @@ ablation:
 
 baseline_prediction: [1, 1, 1, 1]
 post_ablation_prediction: [1, 1, 0, 0]
+restored_prediction: [1, 1, 1, 1]
 
 measurement:
   I:

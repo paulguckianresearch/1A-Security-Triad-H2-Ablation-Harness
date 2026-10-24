@@ -62,6 +62,26 @@ a denial record for the source's admitted and routed operation
 (`authority_denied`, attempt `operation_write`); and `handler_reached` for
 that operation, showing the route was traversed before the denial.
 
+## Interdiction (H2-P)
+
+All three presence warrants above, plus: the content rule is configured;
+`processing_interdicted` is logged for the source's admitted and routed
+input; `handler_reached` precedes it; the source receives an admitted
+response marked interdicted; no `state_write` for the source. The
+Authority probe must succeed while the rule is active, which is what
+contradicts a reading of the filter as an Authority denial.
+
+## Null intervention (H2-N)
+
+All three presence warrants, the operation occurring, and the configuration
+showing the irrelevant change applied.
+
+## Restoration (every run)
+
+After restore and reset, the baseline measurement is repeated and must
+return (1, 1, 1, 1) with the operation occurring. Reported separately from
+the run outcome.
+
 ## Redesign is not ablation
 
 No mechanism, identity, source, route or enforcement point may be created,

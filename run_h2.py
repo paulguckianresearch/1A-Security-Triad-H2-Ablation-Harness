@@ -31,14 +31,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 EXP = ROOT / "experiments" / "H2"
-HARNESS_VERSION = "0.1.0"
+HARNESS_VERSION = "0.2.0"
 
 ABLATIONS = {
-    "I": {"manifest": "H2-I.yaml", "post": [0, 1, 1, 0]},
-    "X": {"manifest": "H2-X.yaml", "post": [1, 0, 1, 0]},
-    "A": {"manifest": "H2-A.yaml", "post": [1, 1, 0, 0]},
+    # Structural denials (H2): one condition removed, two verified present.
+    "I": {"manifest": "H2-I.yaml", "post": [0, 1, 1, 0], "kind": "denial"},
+    "X": {"manifest": "H2-X.yaml", "post": [1, 0, 1, 0], "kind": "denial"},
+    "A": {"manifest": "H2-A.yaml", "post": [1, 1, 0, 0], "kind": "denial"},
+    # Processing interdiction: all three present, operation does not occur.
+    "P": {"manifest": "H2-P.yaml", "post": [1, 1, 1, 0], "kind": "interdiction"},
+    # Null intervention: a change touching none of the three.
+    "N": {"manifest": "H2-N.yaml", "post": [1, 1, 1, 1], "kind": "null"},
 }
 BASELINE = [1, 1, 1, 1]
+RESTORED = [1, 1, 1, 1]
 
 SOURCE_FILES = [
     ROOT / "run_h2.py",
@@ -303,8 +309,12 @@ def post_phase(b, ip, ablation, sham=False):
         applied = b.probe(f"SET_DENY_IP {ip}")
     elif ablation == "X":
         applied = b.probe("SET_ROUTE off")
-    else:
+    elif ablation == "A":
         applied = b.admin("WITHDRAW_WRITE")
+    elif ablation == "P":
+        applied = b.probe("SET_INTERDICT 42")
+    elif ablation == "N":
+        applied = b.probe("SET_LOG_VERBOSITY verbose")
 
     src = b.send()
     present, out = measure_present(b, ip, src)
@@ -328,7 +338,7 @@ def post_phase(b, ip, ablation, sham=False):
                        and st["mem"].get("marker_seen") is False
                        and not ev_has(ev, "handler_reached")
                        and not ev_has(ev, "x_marker_reached_handler"))
-    else:
+    elif ablation == "A":
         absent["A"] = (access.get("state_writable_by_process") is False
                        and access.get("data_dir_writable_by_process") is False
                        and a_result.get("authority_probe") == "denied"
@@ -353,12 +363,41 @@ def post_phase(b, ip, ablation, sham=False):
     out["presence_evidence"] = present
     out["absence_evidence"] = absent
 
+    if ablation == "P" and not sham:
+        # The interdiction itself must be evidenced, and the misclassification
+        # of a processing filter as an Authority denial must be contradicted
+        # by the Authority probe (which is part of present["A"] above).
+        interdicted = (st["policy"].get("interdict_value") == 42
+                       and ev_has(ev, "processing_interdicted", client_ip=ip)
+                       and ev_has(ev, "handler_reached", client_ip=ip)
+                       and src.get("status") == 200
+                       and src.get("body", {}).get("interdicted") is True
+                       and not ev_has(ev, "state_write", client_ip=ip))
+        complete = complete and interdicted
+        out["interdiction_evidence"] = interdicted
+        out["misclassification_check"] = {
+            "reading_filter_as_authority_denial_contradicted_by": "AUTHORITY_PROBE wrote the protected state",
+            "authority_present": present["A"]}
+    if ablation == "N" and not sham:
+        null_applied = (st["policy"].get("log_verbosity") == "verbose"
+                        and ev_has(ev, "state_write", client_ip=ip))
+        complete = complete and null_applied
+        out["null_intervention_evidence"] = null_applied
+
     # Restore before the next phase. RESET needs write control, so the
     # Authority restore comes first.
     if ablation == "A" and not sham:
         out["restore"] = b.admin("RESTORE_WRITE")
     b.probe("RESET")
     return observed, complete, out
+
+
+def restoration_phase(b, ip):
+    """After restore and RESET the configuration is the baseline again. The
+    prediction is (1,1,1,1) with the operation returning, which shows the
+    ablated condition was the cause of O = 0 in the post phase."""
+    observed, ok, out = baseline_phase(b, ip)
+    return observed, ok, out
 
 
 def classify(baseline, post, expected_post, evidence_ok):
@@ -409,7 +448,13 @@ def one_run(b, ablation, run_number, results_root, sham=False):
     write_json(run_dir / "post.state.json", post_ev["state"])
     write_json(run_dir / "post.access_state.json", post_ev["access_state"])
 
+    restored, rest_ok, rest_ev = restoration_phase(b, ip)
+    write_json(run_dir / "restored.events.json", rest_ev["events"])
+    write_json(run_dir / "restored.state.json", rest_ev["state"])
+
     outcome = classify(baseline, post, spec["post"], base_ok and post_ok)
+    restoration_outcome = "PASS" if (restored == RESTORED and rest_ok) else \
+        ("FAIL" if any(o is not None and o != e for o, e in zip(restored, RESTORED)) else "AMBIGUOUS")
     record = {
         "test": f"H2-{ablation}",
         "mode": b.name,
@@ -425,10 +470,18 @@ def one_run(b, ablation, run_number, results_root, sham=False):
         "baseline_prediction": BASELINE,
         "baseline_observed": baseline,
         "baseline_evidence_complete": base_ok,
+        "kind": spec["kind"],
         "post_prediction": spec["post"],
         "post_observed": post,
         "post_evidence_complete": post_ok,
         "outcome": outcome,
+        "restored_prediction": RESTORED,
+        "restored_observed": restored,
+        "restored_evidence_complete": rest_ok,
+        "restoration_outcome": restoration_outcome,
+        "interdiction_evidence": post_ev.get("interdiction_evidence"),
+        "misclassification_check": post_ev.get("misclassification_check"),
+        "null_intervention_evidence": post_ev.get("null_intervention_evidence"),
         "baseline_evidence_summary": {"source_result": base_ev["source_result"],
                                       "x_probe": base_ev["x_probe"],
                                       "authority_probe": base_ev["authority_probe"]},
@@ -442,7 +495,8 @@ def one_run(b, ablation, run_number, results_root, sham=False):
     write_json(run_dir / "record.json", record)
     save_checksums(run_dir)
     print(f"H2-{ablation} [{sub}] run {run_number}: baseline={tuple(baseline)} "
-          f"post={tuple(post)} expected={tuple(spec['post'])} => {outcome}")
+          f"post={tuple(post)} expected={tuple(spec['post'])} => {outcome}; "
+          f"restored={tuple(restored)} => {restoration_outcome}")
     return record
 
 
@@ -475,7 +529,7 @@ def main():
     g.add_argument("--dry-run", action="store_true")
     g.add_argument("--execute", action="store_true")
     ap.add_argument("--mode", choices=["docker", "local"], default="docker")
-    ap.add_argument("--ablation", choices=["I", "X", "A", "all"], default="all")
+    ap.add_argument("--ablation", choices=["I", "X", "A", "P", "N", "all"], default="all")
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--yes", action="store_true", help="skip the EXECUTE confirmation")
     ap.add_argument("--sham", action="store_true",
@@ -490,7 +544,7 @@ def main():
         dry_run(args.mode)
         return
 
-    ablations = ["I", "X", "A"] if args.ablation == "all" else [args.ablation]
+    ablations = ["I", "X", "A", "P", "N"] if args.ablation == "all" else [args.ablation]
     print(f"Mode: {args.mode}   Ablations: {ablations}   Runs each: {args.runs}"
           + ("   SHAM CONTROL (no ablation applied; expected FAIL)" if args.sham else ""))
     if args.mode == "local":
@@ -500,6 +554,11 @@ def main():
             print("Cancelled.")
             return
 
+    if args.sham:
+        ablations = [a for a in ablations if ABLATIONS[a]["kind"] == "denial"]
+        # A sham of H2-N would trivially pass (prediction equals the untouched
+        # system) and a sham of H2-P tests nothing beyond H2-N, so shams are
+        # run for the three denials only.
     b = DockerBackend() if args.mode == "docker" else \
         LocalBackend(args.local_user, args.local_port, args.local_workdir)
     results_root = Path(args.results)

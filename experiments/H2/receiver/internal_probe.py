@@ -16,7 +16,8 @@ if len(sys.argv) != 2:
     raise SystemExit(
         "usage: internal_probe.py "
         "X_MARKER|AUTHORITY_PROBE|ACCESS_STATE|MEM|RESET|"
-        "'SET_DENY_IP <ip>'|'SET_ROUTE on|off'"
+        "'SET_DENY_IP <ip>'|'SET_ROUTE on|off'|'SET_INTERDICT <value>|off'|"
+        "'SET_LOG_VERBOSITY <level>'"
     )
 
 s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)

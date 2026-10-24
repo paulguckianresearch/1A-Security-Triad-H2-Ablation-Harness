@@ -5,7 +5,9 @@
   },
   "policy": {
     "deny_ip": null,
-    "route_admission_to_worker": false
+    "route_admission_to_worker": false,
+    "interdict_value": null,
+    "log_verbosity": "normal"
   },
   "mem": {
     "marker_seen": false,

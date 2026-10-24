@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0 - 2026-10-24
+
+Declared harness revision before the pre-registration deposit (nothing had been deposited at 0.1.0).
+
+### Added
+- H2-P processing interdiction: a worker content rule refuses the write with admission, route and control unchanged; predicted (1,1,1,0). Puts Eq. (6) at risk and records that the Authority probe succeeds while the filter is active.
+- H2-N null intervention: log verbosity changed; predicted (1,1,1,1). Specificity control.
+- Restoration phase in every run: baseline re-measured after restore; predicted (1,1,1,1) with O returning; reported as a separate outcome.
+- `restored_prediction` field in every manifest; `kind` field in `record.json`.
+- Shams run for the three denials only (a sham of H2-N is trivial and a sham of H2-P adds nothing beyond H2-N).
+
+### Pilot
+- The 0.1.0 Docker batch (Windows, 2026-10-24: I, X, A each 5/5 PASS; sham 2/2 FAIL per test) is retained under `results-pilot-v0.1.0/` as a pre-specified pilot, not pre-registered, and is not the reported batch.
+
+### Floor case considered and not added
+- A receiver with the admission check inside the handler was considered as a test of the decomposition floor. It does not discriminate: either the in-handler check is nominated as the Interface and the conditions separate again, or admission and write are one atomic step and no marker can be injected, giving AMBIGUOUS by construction. Recorded here so the omission is visible.
+
 ## 0.1.0 - 2026-10-24
 
 Pre-release fix before deposit: the Unix-only `pwd` import moved inside the local backend so the runner starts on Windows (docker mode never needed it).

@@ -73,7 +73,8 @@ def reset():
     so it is only called while Authority is present (before an ablation and
     after RESTORE_WRITE)."""
     save_json(STATE, {"test_value": 0, "authority_probe": None})
-    save_json(POLICY, {"deny_ip": None, "route_admission_to_worker": True})
+    save_json(POLICY, {"deny_ip": None, "route_admission_to_worker": True,
+                       "interdict_value": None, "log_verbosity": "normal"})
     with io_lock:
         with open(EVENTS, "w", encoding="utf-8") as f:
             f.write("")
@@ -102,6 +103,19 @@ def worker():
                     mem["marker_seen"] = True
                     mem["marker_count"] += 1
                     item["result"]["marker_seen"] = True
+                    continue
+                # Processing interdiction (H2-P): a content rule inside the
+                # worker refuses the write while admission, route and the
+                # worker's control over the state are all unchanged. This is
+                # the "interdict with Sigma present" row of the paper's
+                # intervention table, not a structural denial.
+                pol = load_json(POLICY, {})
+                if pol.get("interdict_value") is not None and \
+                        item["value"] == pol.get("interdict_value"):
+                    log("processing_interdicted",
+                        client_ip=item["client_ip"], value=item["value"])
+                    item["result"]["written"] = None
+                    item["result"]["interdicted"] = True
                     continue
                 try:
                     st = load_json(STATE, {})
@@ -258,6 +272,21 @@ def internal_server():
                     save_json(POLICY, pol)
                     log("policy_changed", route_admission_to_worker=val)
                     result = {"route_admission_to_worker": val}
+                elif cmd.startswith("SET_INTERDICT "):
+                    raw_v = cmd.split(" ", 1)[1].strip()
+                    val = None if raw_v.lower() == "off" else int(raw_v)
+                    pol = load_json(POLICY, {})
+                    pol["interdict_value"] = val
+                    save_json(POLICY, pol)
+                    log("policy_changed", interdict_value=val)
+                    result = {"interdict_value": val}
+                elif cmd.startswith("SET_LOG_VERBOSITY "):
+                    val = cmd.split(" ", 1)[1].strip()
+                    pol = load_json(POLICY, {})
+                    pol["log_verbosity"] = val
+                    save_json(POLICY, pol)
+                    log("policy_changed", log_verbosity=val)
+                    result = {"log_verbosity": val}
                 elif cmd == "RESET":
                     reset()
                     result = {"ok": True}
@@ -327,6 +356,7 @@ class Handler(BaseHTTPRequestHandler):
             "routed": result.get("routed"),
             "written": result.get("written"),
             "denied": result.get("denied", False),
+            "interdicted": result.get("interdicted", False),
             "client_ip": client_ip
         })
 
