@@ -1,0 +1,16 @@
+{
+  "state": {
+    "test_value": 42,
+    "authority_probe": "ok"
+  },
+  "policy": {
+    "deny_ip": null,
+    "route_admission_to_worker": true,
+    "interdict_value": null,
+    "log_verbosity": "verbose"
+  },
+  "mem": {
+    "marker_seen": true,
+    "marker_count": 1
+  }
+}

@@ -1,0 +1,58 @@
+id: H2-X
+title: "Single-mechanism Execution Pathway ablation (route from admission to worker disabled)"
+paper: "Paper 1A, Section 4.3, state (1,0,1)"
+parent: "H4 Ablation Harness I-1 receiver, https://doi.org/10.5281/zenodo.22711457"
+harness_version: 0.2.0
+
+operation:
+  description: "Source S causes receiver R to change test_value from 0 to 42."
+  q0: "test_value=0"
+  q1: "test_value=42"
+
+unit_of_analysis:
+  note: "One mechanism; see H2-I."
+
+nominated_interface:
+  mechanism: R
+  description: "Receiver HTTP listener /push"
+
+acting_mechanism:
+  description: "Receiver worker handling an admitted work item"
+  execution_identity: "receiver process identity (uid of user h2)"
+  protected_state: "state.json in the data directory"
+
+ablation:
+  description: >
+    Disable the standing route from the receiving side of /push to the
+    worker (route_admission_to_worker = false). Admission is unchanged and
+    is exercised: S's input is admitted and parsed, and there is then no
+    route to the acting mechanism. The worker, its identity and its control
+    over the protected state are untouched.
+  changed_condition: "Execution Pathway only"
+  control_type: "disabling functionality (Paper 1A Table 3, Deny X); the structural form of patching"
+  redesign_check: >
+    No mechanism, identity, source, route or enforcement point is created,
+    split, duplicated or replaced. An existing route is switched off.
+
+baseline_prediction: [1, 1, 1, 1]
+post_ablation_prediction: [1, 0, 1, 0]
+restored_prediction: [1, 1, 1, 1]
+
+measurement:
+  I:
+    baseline: "interface_admit event for S"
+    post: "interface_admit event for S still logged; HTTP 202 admitted=true to S"
+  X:
+    baseline: "handler_reached and x_marker_reached_handler observed"
+    post: "policy shows route absent; route_absent events for S's input and for X_MARKER; X_MARKER returns routed=false; no handler_reached or x_marker_reached_handler event in the post window, where the baseline window observed both"
+  A:
+    baseline: "state_write by the receiver worker"
+    post: "ACCESS_STATE grants write; AUTHORITY_PROBE by the same process writes the protected state. The probe is submitted to the worker directly and does not depend on the disabled route."
+  O:
+    baseline: "test_value 0 -> 42"
+    post: "test_value remains 0 (observed, not used as evidence)"
+
+classification_rule:
+  pass: "baseline == [1,1,1,1] and post == [1,0,1,0], each value carrying its own affirmative evidence"
+  fail: "measured evidence contradicts a predicted value"
+  ambiguous: "required presence or absence evidence cannot be established"

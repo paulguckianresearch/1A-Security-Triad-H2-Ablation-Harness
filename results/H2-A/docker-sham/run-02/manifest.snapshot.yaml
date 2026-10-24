@@ -1,0 +1,58 @@
+id: H2-A
+title: "Single-mechanism Authority ablation (write control over the protected state withdrawn)"
+paper: "Paper 1A, Section 4.3, state (1,1,0)"
+parent: "H4 Ablation Harness I-1 receiver, https://doi.org/10.5281/zenodo.22711457"
+harness_version: 0.2.0
+
+operation:
+  description: "Source S causes receiver R to change test_value from 0 to 42."
+  q0: "test_value=0"
+  q1: "test_value=42"
+
+unit_of_analysis:
+  note: >
+    One mechanism. Authority A(m,q) takes no source argument (Paper 1A
+    Section 3.6): the withdrawal is identity-wide, not specific to S.
+
+nominated_interface:
+  mechanism: R
+  description: "Receiver HTTP listener /push"
+
+acting_mechanism:
+  description: "Receiver worker handling an admitted work item"
+  execution_identity: "receiver process identity (uid of user h2)"
+  protected_state: "state.json in the data directory, owned by the administrator identity; the receiver's write control is group write permission"
+
+ablation:
+  description: >
+    The administrator identity (root) removes group write permission from
+    the protected state file and its directory. The receiver identity,
+    listener, admission policy, route and worker are unchanged. The event
+    log is owned by the receiver identity so that the denial record can be
+    written.
+  changed_condition: "Authority only"
+  control_type: "least authority / capability removal (Paper 1A Table 3, Deny A)"
+  redesign_check: "Same files, same owner, same group, same receiver identity; only the access-control state changes."
+
+baseline_prediction: [1, 1, 1, 1]
+post_ablation_prediction: [1, 1, 0, 0]
+restored_prediction: [1, 1, 1, 1]
+
+measurement:
+  I:
+    baseline: "interface_admit event for S"
+    post: "interface_admit event for S still logged"
+  X:
+    baseline: "handler_reached and x_marker_reached_handler observed"
+    post: "handler_reached for S's input; X_MARKER dispatched on the standing route and x_marker_reached_handler observed (the marker records in memory and needs no write control)"
+  A:
+    baseline: "ACCESS_STATE grants write on directory and file; AUTHORITY_PROBE writes the protected state"
+    post: "ACCESS_STATE read inside R shows write withheld on directory and file; AUTHORITY_PROBE by the same process raises PermissionError, logged as authority_denied (attempt authority_probe); S's admitted and routed operation is likewise logged authority_denied (attempt operation_write)"
+  O:
+    baseline: "test_value 0 -> 42"
+    post: "test_value remains 0 (observed, not used as evidence)"
+
+classification_rule:
+  pass: "baseline == [1,1,1,1] and post == [1,1,0,0], each value carrying its own affirmative evidence"
+  fail: "measured evidence contradicts a predicted value"
+  ambiguous: "required presence or absence evidence cannot be established"

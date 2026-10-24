@@ -1,0 +1,54 @@
+[
+  {
+    "ts": 1792850152.6441548,
+    "event": "reset"
+  },
+  {
+    "ts": 1792850153.5326517,
+    "event": "interface_admit",
+    "client_ip": "172.26.0.3"
+  },
+  {
+    "ts": 1792850153.5328076,
+    "event": "route_dispatch",
+    "client_ip": "172.26.0.3",
+    "marker": false
+  },
+  {
+    "ts": 1792850153.5329745,
+    "event": "handler_reached",
+    "client_ip": "172.26.0.3",
+    "value": 42,
+    "marker": false
+  },
+  {
+    "ts": 1792850153.5331829,
+    "event": "authority_denied",
+    "client_ip": "172.26.0.3",
+    "attempt": "operation_write",
+    "error": "PermissionError(13, 'Permission denied')"
+  },
+  {
+    "ts": 1792850153.9283566,
+    "event": "route_dispatch",
+    "client_ip": "internal-x-marker",
+    "marker": true
+  },
+  {
+    "ts": 1792850153.9286044,
+    "event": "handler_reached",
+    "client_ip": "internal-x-marker",
+    "value": 0,
+    "marker": true
+  },
+  {
+    "ts": 1792850153.928679,
+    "event": "x_marker_reached_handler"
+  },
+  {
+    "ts": 1792850154.6982534,
+    "event": "authority_denied",
+    "attempt": "authority_probe",
+    "error": "PermissionError(13, 'Permission denied')"
+  }
+]

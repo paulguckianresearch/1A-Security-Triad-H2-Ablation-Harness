@@ -1,0 +1,37 @@
+[
+  {
+    "ts": 1792849806.4944897,
+    "event": "reset"
+  },
+  {
+    "ts": 1792849806.9036803,
+    "event": "policy_changed",
+    "deny_ip": "192.168.160.3"
+  },
+  {
+    "ts": 1792849807.3776915,
+    "event": "interface_reject",
+    "client_ip": "192.168.160.3"
+  },
+  {
+    "ts": 1792849807.7557282,
+    "event": "route_dispatch",
+    "client_ip": "internal-x-marker",
+    "marker": true
+  },
+  {
+    "ts": 1792849807.7558663,
+    "event": "handler_reached",
+    "client_ip": "internal-x-marker",
+    "value": 0,
+    "marker": true
+  },
+  {
+    "ts": 1792849807.7559125,
+    "event": "x_marker_reached_handler"
+  },
+  {
+    "ts": 1792849808.5554183,
+    "event": "authority_probe_write"
+  }
+]

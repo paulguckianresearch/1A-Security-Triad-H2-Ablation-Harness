@@ -1,0 +1,56 @@
+[
+  {
+    "ts": 1792850202.8568983,
+    "event": "reset"
+  },
+  {
+    "ts": 1792850203.2398725,
+    "event": "policy_changed",
+    "interdict_value": 42
+  },
+  {
+    "ts": 1792850203.6922023,
+    "event": "interface_admit",
+    "client_ip": "172.28.0.3"
+  },
+  {
+    "ts": 1792850203.6924202,
+    "event": "route_dispatch",
+    "client_ip": "172.28.0.3",
+    "marker": false
+  },
+  {
+    "ts": 1792850203.6925704,
+    "event": "handler_reached",
+    "client_ip": "172.28.0.3",
+    "value": 42,
+    "marker": false
+  },
+  {
+    "ts": 1792850203.6926768,
+    "event": "processing_interdicted",
+    "client_ip": "172.28.0.3",
+    "value": 42
+  },
+  {
+    "ts": 1792850204.1036344,
+    "event": "route_dispatch",
+    "client_ip": "internal-x-marker",
+    "marker": true
+  },
+  {
+    "ts": 1792850204.1037877,
+    "event": "handler_reached",
+    "client_ip": "internal-x-marker",
+    "value": 0,
+    "marker": true
+  },
+  {
+    "ts": 1792850204.1038442,
+    "event": "x_marker_reached_handler"
+  },
+  {
+    "ts": 1792850204.877077,
+    "event": "authority_probe_write"
+  }
+]
