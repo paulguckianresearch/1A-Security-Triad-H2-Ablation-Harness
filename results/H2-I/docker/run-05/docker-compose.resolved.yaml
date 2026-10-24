@@ -1,0 +1,37 @@
+name: h2
+services:
+  receiver:
+    build:
+      context: C:\Users\Paul.Guckian\OneDrive\PhD\Kingston PhD Thesis\1A. Cyber Triangle\Zenodo\paper1a-h2-ablation-v0.2.0\paper1a-h2-ablation\experiments\H2\receiver
+      dockerfile: Dockerfile
+    container_name: h2-receiver
+    networks:
+      h2net: null
+    ports:
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 8080
+      published: "18082"
+      protocol: tcp
+    volumes:
+    - type: volume
+      source: h2data
+      target: /data
+      volume: {}
+  source:
+    build:
+      context: C:\Users\Paul.Guckian\OneDrive\PhD\Kingston PhD Thesis\1A. Cyber Triangle\Zenodo\paper1a-h2-ablation-v0.2.0\paper1a-h2-ablation\experiments\H2\source
+      dockerfile: Dockerfile
+    container_name: h2-source
+    depends_on:
+      receiver:
+        condition: service_started
+    networks:
+      h2net: null
+networks:
+  h2net:
+    name: h2_h2net
+    driver: bridge
+volumes:
+  h2data:
+    name: h2_h2data

@@ -1,0 +1,51 @@
+[
+  {
+    "ts": 1792847117.416833,
+    "event": "reset"
+  },
+  {
+    "ts": 1792847117.8910654,
+    "event": "interface_admit",
+    "client_ip": "192.168.112.3"
+  },
+  {
+    "ts": 1792847117.891165,
+    "event": "route_dispatch",
+    "client_ip": "192.168.112.3",
+    "marker": false
+  },
+  {
+    "ts": 1792847117.8912783,
+    "event": "handler_reached",
+    "client_ip": "192.168.112.3",
+    "value": 42,
+    "marker": false
+  },
+  {
+    "ts": 1792847117.891477,
+    "event": "state_write",
+    "client_ip": "192.168.112.3",
+    "value": 42
+  },
+  {
+    "ts": 1792847118.3013484,
+    "event": "route_dispatch",
+    "client_ip": "internal-x-marker",
+    "marker": true
+  },
+  {
+    "ts": 1792847118.3014848,
+    "event": "handler_reached",
+    "client_ip": "internal-x-marker",
+    "value": 0,
+    "marker": true
+  },
+  {
+    "ts": 1792847118.3015294,
+    "event": "x_marker_reached_handler"
+  },
+  {
+    "ts": 1792847119.0788512,
+    "event": "authority_probe_write"
+  }
+]

@@ -1,0 +1,55 @@
+id: H2-I
+title: "Single-mechanism Interface ablation (admission denied at /push)"
+paper: "Paper 1A, Section 4.3, state (0,1,1)"
+parent: "H4 Ablation Harness I-1, https://doi.org/10.5281/zenodo.22711457"
+harness_version: 0.2.0
+
+operation:
+  description: "Source S causes receiver R to change test_value from 0 to 42."
+  q0: "test_value=0"
+  q1: "test_value=42"
+
+unit_of_analysis:
+  note: >
+    One mechanism. The source S is the input's origin and nothing more; no
+    relation between S and R is classified, no governance boundary is
+    assigned, and no condition is supplied to R from elsewhere. This is the
+    node-level experiment of Paper 1A Section 9, not the relational
+    experiment of Paper 1B.
+
+nominated_interface:
+  mechanism: R
+  description: "Receiver HTTP listener /push, admission relation keyed on client address"
+
+acting_mechanism:
+  description: "Receiver worker handling an admitted work item"
+  execution_identity: "receiver process identity (uid of user h2)"
+  protected_state: "state.json in the data directory"
+
+ablation:
+  description: "Change the existing admission policy at /push to deny Source S by its current address."
+  changed_condition: "Interface only"
+  control_type: "segmentation (Paper 1A Table 3, Deny I)"
+
+baseline_prediction: [1, 1, 1, 1]
+post_ablation_prediction: [0, 1, 1, 0]
+restored_prediction: [1, 1, 1, 1]
+
+measurement:
+  I:
+    baseline: "interface_admit event for S at /push and HTTP 200 to S"
+    post: "deny policy names S's address, interface_reject event for that address, HTTP 403 to S"
+  X:
+    baseline: "handler_reached event for the admitted operation"
+    post: "X_MARKER enters the post-admission path through the internal socket, is dispatched on the standing route to the same worker, and x_marker_reached_handler is observed"
+  A:
+    baseline: "state_write event by the receiver worker"
+    post: "ACCESS_STATE read inside R grants write on directory and file; AUTHORITY_PROBE by the same process writes the protected state (authority_probe_write)"
+  O:
+    baseline: "test_value 0 -> 42 caused by S"
+    post: "test_value remains 0 after S's attempt (observed, not used as evidence for any condition)"
+
+classification_rule:
+  pass: "baseline == [1,1,1,1] and post == [0,1,1,0], each value carrying its own affirmative evidence"
+  fail: "measured evidence contradicts a predicted value"
+  ambiguous: "required presence or absence evidence cannot be established"

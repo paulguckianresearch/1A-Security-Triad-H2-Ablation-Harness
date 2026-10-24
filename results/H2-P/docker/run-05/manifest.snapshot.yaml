@@ -1,0 +1,42 @@
+id: H2-P
+title: "Processing interdiction with all three conditions present"
+paper: "Paper 1A, Eq. (6) and Section 7.1 (interdict with Sigma present); Table of intervention locations, Processing row"
+parent: "H4 Ablation Harness I-1 receiver, https://doi.org/10.5281/zenodo.22711457"
+harness_version: 0.2.0
+
+operation:
+  description: "Source S causes receiver R to change test_value from 0 to 42."
+  q0: "test_value=0"
+  q1: "test_value=42"
+
+unit_of_analysis:
+  note: "One mechanism; see H2-I."
+
+intervention:
+  description: >
+    A content rule inside the worker refuses to perform the write when the
+    admitted, routed value equals 42. Admission, the route and the worker's
+    write control over the protected state are unchanged.
+  changed_condition: "None. This is not a structural denial; it is interdiction during processing."
+  what_it_tests: >
+    Eq. (6): I and X and A do not entail O. A model whose third condition
+    were the ability to execute would have to record a condition absent
+    here; this model predicts all three present and the operation not
+    occurring. The run also records that reading the filter as an Authority
+    denial is contradicted by the Authority probe, which writes the same
+    protected state under the same identity while the filter is in force.
+
+baseline_prediction: [1, 1, 1, 1]
+post_ablation_prediction: [1, 1, 1, 0]
+restored_prediction: [1, 1, 1, 1]
+
+measurement:
+  I: {baseline: "interface_admit for S", post: "interface_admit for S"}
+  X: {baseline: "handler_reached; x_marker_reached_handler", post: "handler_reached for S; X_MARKER dispatched and observed at the handler"}
+  A: {baseline: "ACCESS_STATE grants; AUTHORITY_PROBE writes", post: "ACCESS_STATE grants; AUTHORITY_PROBE writes the protected state while the filter is active"}
+  O: {baseline: "0 -> 42", post: "remains 0; processing_interdicted event for S's value; no state_write for S"}
+
+classification_rule:
+  pass: "baseline == [1,1,1,1]; post == [1,1,1,0] with every presence value affirmatively evidenced and the interdiction evidenced; restored == [1,1,1,1]"
+  fail: "any affirmatively evidenced value contradicts a prediction, in particular any condition recorded absent"
+  ambiguous: "required evidence cannot be established"
