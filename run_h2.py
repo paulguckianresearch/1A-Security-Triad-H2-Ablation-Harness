@@ -21,7 +21,6 @@ import hashlib
 import json
 import os
 import platform
-import pwd
 import shutil
 import subprocess
 import sys
@@ -143,6 +142,7 @@ class LocalBackend:
     name = "local"
 
     def __init__(self, user, port, workdir):
+        import pwd  # Unix only; local mode is Linux/macOS
         if os.geteuid() != 0:
             raise RuntimeError("local mode must run as root (it acts as the administrator identity)")
         try:

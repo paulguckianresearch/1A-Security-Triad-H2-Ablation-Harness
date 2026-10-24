@@ -2,6 +2,8 @@
 
 ## 0.1.0 - 2026-10-24
 
+Pre-release fix before deposit: the Unix-only `pwd` import moved inside the local backend so the runner starts on Windows (docker mode never needed it).
+
 Initial harness, derived from H4 Ablation Harness I-1 (10.5281/zenodo.22711457).
 
 ### Kept from I-1

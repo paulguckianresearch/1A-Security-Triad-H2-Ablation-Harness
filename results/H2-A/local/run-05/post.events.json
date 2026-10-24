@@ -1,52 +1,52 @@
 [
   {
-    "ts": 1792844553.304683,
+    "ts": 1792845070.9554076,
     "event": "reset"
   },
   {
-    "ts": 1792844553.3845086,
+    "ts": 1792845071.0240362,
     "event": "interface_admit",
     "client_ip": "127.0.0.1"
   },
   {
-    "ts": 1792844553.3846192,
+    "ts": 1792845071.0240974,
     "event": "route_dispatch",
     "client_ip": "127.0.0.1",
     "marker": false
   },
   {
-    "ts": 1792844553.3847184,
+    "ts": 1792845071.024156,
     "event": "handler_reached",
     "client_ip": "127.0.0.1",
     "value": 42,
     "marker": false
   },
   {
-    "ts": 1792844553.3848858,
+    "ts": 1792845071.0242717,
     "event": "authority_denied",
     "client_ip": "127.0.0.1",
     "attempt": "operation_write",
     "error": "PermissionError(13, 'Permission denied')"
   },
   {
-    "ts": 1792844553.4258919,
+    "ts": 1792845071.0553615,
     "event": "route_dispatch",
     "client_ip": "internal-x-marker",
     "marker": true
   },
   {
-    "ts": 1792844553.426024,
+    "ts": 1792845071.0554528,
     "event": "handler_reached",
     "client_ip": "internal-x-marker",
     "value": 0,
     "marker": true
   },
   {
-    "ts": 1792844553.426096,
+    "ts": 1792845071.0555096,
     "event": "x_marker_reached_handler"
   },
   {
-    "ts": 1792844553.4921842,
+    "ts": 1792845071.103685,
     "event": "authority_denied",
     "attempt": "authority_probe",
     "error": "PermissionError(13, 'Permission denied')"
