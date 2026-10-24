@@ -1,0 +1,32 @@
+[
+  {
+    "ts": 1792844536.7198122,
+    "event": "reset"
+  },
+  {
+    "ts": 1792844536.7558303,
+    "event": "policy_changed",
+    "route_admission_to_worker": false
+  },
+  {
+    "ts": 1792844536.8148623,
+    "event": "interface_admit",
+    "client_ip": "127.0.0.1"
+  },
+  {
+    "ts": 1792844536.8149645,
+    "event": "route_absent",
+    "client_ip": "127.0.0.1",
+    "marker": false
+  },
+  {
+    "ts": 1792844536.8523438,
+    "event": "route_absent",
+    "client_ip": "internal-x-marker",
+    "marker": true
+  },
+  {
+    "ts": 1792844536.901965,
+    "event": "authority_probe_write"
+  }
+]

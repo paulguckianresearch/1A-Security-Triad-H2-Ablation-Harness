@@ -1,0 +1,27 @@
+services:
+  receiver:
+    build:
+      context: ./receiver
+    container_name: h2-receiver
+    ports:
+      - "127.0.0.1:18082:8080"
+    volumes:
+      - h2data:/data
+    networks:
+      - h2net
+
+  source:
+    build:
+      context: ./source
+    container_name: h2-source
+    depends_on:
+      - receiver
+    networks:
+      - h2net
+
+networks:
+  h2net:
+    driver: bridge
+
+volumes:
+  h2data:

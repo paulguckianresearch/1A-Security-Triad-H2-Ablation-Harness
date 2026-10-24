@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: Paper 1A H2 Ablation Harness
+message: If you use this harness, please cite the associated paper and this software release.
+type: software
+authors:
+  - family-names: Guckian
+    given-names: Paul
+    affiliation: Independent Researcher, London, United Kingdom
+license: MIT
+version: 0.1.0
+date-released: 2026-10-24
+references:
+  - type: software
+    title: H4 Ablation Harness
+    authors:
+      - family-names: Guckian
+        given-names: Paul
+    doi: 10.5281/zenodo.22711457
+    notes: Parent harness from which experiment I-1's receiver, marker and probe are derived.
+abstract: >-
+  Reproducible Docker/Python harness for the controlled single-mechanism
+  independence experiment of Paper 1A (H2): removal of Interface, Execution
+  Pathway and Authority in turn from one fixed mechanism, each by an ordinary
+  control, with the two unaffected conditions independently verified and a
+  sham control for the harness itself.
+keywords:
+  - cybersecurity
+  - ablation
+  - reproducibility
+  - interface
+  - execution pathway
+  - authority
